@@ -1,0 +1,22 @@
+
+
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "esModuleInterop": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "lib": ["es2020", "DOM"],
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "outDir": ".build",
+    "preserveConstEnums": true,
+    "rootDir": "./",
+    "sourceMap": true,
+
+    "strictNullChecks": true,
+    "target": "es2019",
+    "resolveJsonModule": true
+  },
+  "exclude": ["node_modules, src/tests"]
+}
