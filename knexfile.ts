@@ -31,12 +31,12 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 const connection = process.env.DATABASE_URL + '?ssl=true';
 const config = {
   client: 'pg',
-  connection: connection,
+  connectionString: connection,
   debug:
     process.env.DEBUG_KNEX && process.env.DEBUG_KNEX.toLowerCase() !== 'false',
-  // ssl: {
-  //   rejectUnauthorized: false,
-  // },
+  ssl: {
+    rejectUnauthorized: false,
+  },
 };
 
 module.exports = config;
