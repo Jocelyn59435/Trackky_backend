@@ -28,7 +28,7 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 //   return process.env.DATABASE_URL;
 // }
 
-const connection = process.env.DATABASE_URL + '?ssl=true';
+const connection = process.env.DATABASE_URL;
 const config = {
   client: 'pg',
   connection: connection,
