@@ -30,6 +30,8 @@ const server = new ApolloServer({
       db,
     };
   },
+  introspection: true,
+  playground: true,
 });
 
 server.applyMiddleware({ app });
