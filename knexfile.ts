@@ -34,9 +34,9 @@ const config = {
   connection: connection,
   debug:
     process.env.DEBUG_KNEX && process.env.DEBUG_KNEX.toLowerCase() !== 'false',
-  ssl: {
-    rejectUnauthorized: false,
-  },
+  // ssl: {
+  //   rejectUnauthorized: false,
+  // },
 };
 
 module.exports = config;
