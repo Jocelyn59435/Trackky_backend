@@ -21,14 +21,14 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 //   },
 // };
 
-function getConnection() {
-  if (process.env.DATABASE_USE_SSL) {
-    return process.env.DATABASE_URL + '?ssl=true';
-  }
-  return process.env.DATABASE_URL;
-}
+// function getConnection() {
+//   if (process.env.DATABASE_USE_SSL) {
+//     return process.env.DATABASE_URL + '?ssl=true';
+//   }
+//   return process.env.DATABASE_URL;
+// }
 
-const connection = getConnection();
+const connection = process.env.DATABASE_URL + '?ssl=true';
 const config = {
   client: 'pg',
   connection: connection,
