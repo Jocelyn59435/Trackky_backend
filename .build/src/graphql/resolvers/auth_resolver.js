@@ -88,6 +88,16 @@ let Auth_Resolver = class Auth_Resolver {
             lastName: user.lastName,
         };
     }
+    async resetPassword(email, passwordInput, ctx) {
+        const { db } = ctx;
+        const [{ updatedAccount }] = await db('user_info')
+            .where('email', email)
+            .update({ password: passwordInput }, ['email']);
+        if (!updatedAccount) {
+            throw new apollo_server_express_1.ApolloError(`Invalid email address: ${email}`);
+        }
+        return updatedAccount;
+    }
 };
 __decorate([
     type_graphql_1.Mutation(() => AuthResponse),
@@ -105,6 +115,15 @@ __decorate([
     __metadata("design:paramtypes", [Auth_1.SignInPayload, Object]),
     __metadata("design:returntype", Promise)
 ], Auth_Resolver.prototype, "signIn", null);
+__decorate([
+    type_graphql_1.Mutation(() => String),
+    __param(0, type_graphql_1.Arg('email')),
+    __param(1, type_graphql_1.Arg('passwordInput')),
+    __param(2, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, Object]),
+    __metadata("design:returntype", Promise)
+], Auth_Resolver.prototype, "resetPassword", null);
 Auth_Resolver = __decorate([
     type_graphql_1.Resolver()
 ], Auth_Resolver);

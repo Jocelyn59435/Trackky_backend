@@ -22,6 +22,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.db = void 0;
 require("reflect-metadata");
 const express_1 = __importDefault(require("express"));
 const apollo_server_express_1 = require("apollo-server-express");
@@ -39,19 +40,21 @@ const schema = type_graphql_1.buildSchemaSync({
     authChecker: verifyAuthToken_1.authChecker,
 });
 const app = express_1.default();
-const db = knex_1.default(config);
+exports.db = knex_1.default(config);
 const server = new apollo_server_express_1.ApolloServer({
     schema,
     context: ({ req, res }) => {
         return {
             req,
             res,
-            db,
+            db: exports.db,
         };
     },
+    introspection: true,
+    playground: true,
 });
 server.applyMiddleware({ app });
-const result = scrapeProduct_1.scrapeProduct('https://www.chemistwarehouse.com.au/buy/99343/l-39-oreal-paris-revitalift-filler-hyaluronic-acid-anti-wrinkle-serum-30ml');
+scrapeProduct_1.scrapeProduct('https://www.chemistwarehouse.com.au/buy/99343/l-39-oreal-paris-revitalift-filler-hyaluronic-acid-anti-wrinkle-serum-30ml');
 app.listen(PORT, () => {
     console.log(`🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`);
 });

@@ -5,6 +5,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { ApolloError } from 'apollo-server-express';
+import { EmailAddress } from '@sendgrid/helpers/classes';
 
 dotenv.config();
 //non-null-assertion
@@ -79,5 +80,22 @@ export class Auth_Resolver {
       firstName: user.firstName,
       lastName: user.lastName,
     };
+  }
+
+  @Mutation(() => String)
+  async resetPassword(
+    @Arg('email') email: string,
+    @Arg('passwordInput') passwordInput: string,
+    @Ctx() ctx: ContextType
+  ): Promise<string> {
+    const { db } = ctx;
+    const [{ updatedAccount }] = await db('user_info')
+      .where('email', email)
+      .update({ password: passwordInput }, ['email']);
+
+    if (!updatedAccount) {
+      throw new ApolloError(`Invalid email address: ${email}`);
+    }
+    return updatedAccount;
   }
 }

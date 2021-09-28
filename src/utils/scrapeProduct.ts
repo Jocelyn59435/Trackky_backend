@@ -1,5 +1,6 @@
 import pt from 'puppeteer';
 import sgMail from '@sendgrid/mail';
+import { db } from '../index';
 
 type productInfo = {
   productName: string | undefined;
@@ -56,6 +57,22 @@ export const scrapeProduct = async (url: string): Promise<productInfo> => {
   } else {
     throw new Error('Failed to fetch product name.');
   }
+
+  const [product] = await db('product')
+    .insert({
+      product_name: productNameText,
+      product_link: url,
+      product_image_src: srcText,
+      platform: 'Chemist Warehouse',
+      status: 'active',
+      user_id: 1,
+      original_price: priceNumber,
+      current_price: priceNumber,
+      desired_price: 10.0,
+    })
+    .returning('*');
+
+  console.log(product);
 
   sendEmail(
     'jocelynhuang193@gmail.com',

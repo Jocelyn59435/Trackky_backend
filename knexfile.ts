@@ -5,8 +5,8 @@ import path from 'path';
 
 dotenv.config({ path: path.join(__dirname, '.env') });
 
-// const { POSTGRES_HOST, POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD } =
-//   process.env;
+const { POSTGRES_HOST, POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD } =
+  process.env;
 
 // module.exports = {
 //   client: 'pg',
@@ -21,10 +21,10 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 //   },
 // };
 
-const connection = process.env.DATABASE_URL;
 const config = {
   client: 'pg',
-  connection: connection,
+  // PG database endpoint from Heroku
+  connection: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false,
   },

@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.scrapeProduct = void 0;
 const puppeteer_1 = __importDefault(require("puppeteer"));
 const mail_1 = __importDefault(require("@sendgrid/mail"));
+const index_1 = require("../index");
 const scrapeProduct = async (url) => {
     const browser = await puppeteer_1.default.launch();
     const page = await browser.newPage();
@@ -41,6 +42,20 @@ const scrapeProduct = async (url) => {
     else {
         throw new Error('Failed to fetch product name.');
     }
+    const [product] = await index_1.db('product')
+        .insert({
+        product_name: productNameText,
+        product_link: url,
+        product_image_src: srcText,
+        platform: 'Chemist Warehouse',
+        status: 'active',
+        user_id: 1,
+        original_price: priceNumber,
+        current_price: priceNumber,
+        desired_price: 10.0,
+    })
+        .returning('*');
+    console.log(product);
     sendEmail('jocelynhuang193@gmail.com', 'xinxin', productNameText, priceNumber, url, srcText);
     return {
         productName: productNameText,

@@ -19,7 +19,7 @@ const schema = buildSchemaSync({
 
 const app = express();
 
-const db = Knex(config);
+export const db = Knex(config);
 
 const server = new ApolloServer({
   schema,
@@ -36,7 +36,7 @@ const server = new ApolloServer({
 
 server.applyMiddleware({ app });
 
-const result = scrapeProduct(
+scrapeProduct(
   'https://www.chemistwarehouse.com.au/buy/99343/l-39-oreal-paris-revitalift-filler-hyaluronic-acid-anti-wrinkle-serum-30ml'
 );
 
