@@ -82,20 +82,20 @@ export class Auth_Resolver {
     };
   }
 
-  @Mutation(() => String)
+  @Mutation()
   async resetPassword(
     @Arg('email') email: string,
     @Arg('passwordInput') passwordInput: string,
     @Ctx() ctx: ContextType
-  ): Promise<string> {
+  ): Promise<void> {
     const { db } = ctx;
-    const [{ updatedAccount }] = await db('user_info')
+    const updatedAccount = await db('user_info')
       .where('email', email)
       .update({ password: passwordInput }, ['email']);
 
     if (!updatedAccount) {
       throw new ApolloError(`Invalid email address: ${email}`);
     }
-    return updatedAccount;
+    console.log(updatedAccount);
   }
 }
