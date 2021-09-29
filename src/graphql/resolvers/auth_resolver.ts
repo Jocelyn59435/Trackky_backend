@@ -26,6 +26,12 @@ export class AuthResponse {
   email: string;
 }
 
+@ObjectType()
+export class UpdatePasswordResponse {
+  @Field((type) => String)
+  email: string;
+}
+
 @Resolver()
 export class Auth_Resolver {
   @Mutation(() => AuthResponse)
@@ -82,12 +88,12 @@ export class Auth_Resolver {
     };
   }
 
-  @Mutation(() => String)
+  @Mutation(() => UpdatePasswordResponse)
   async resetPassword(
     @Arg('email') email: string,
     @Arg('passwordInput') passwordInput: string,
     @Ctx() ctx: ContextType
-  ): Promise<string> {
+  ): Promise<UpdatePasswordResponse> {
     const { db } = ctx;
     const [updatedAccount] = await db('user_info')
       .where('email', email)
