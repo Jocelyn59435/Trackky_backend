@@ -15,10 +15,10 @@ export const authChecker: AuthChecker<ContextType> = async ({
   info,
 }) => {
   const { db, req } = context;
-
+  console.log(req.headers);
   const authorizationHeader = req.headers.authorization;
   if (!authorizationHeader) {
-    throw new AuthenticationError('Invalid request.');
+    throw new AuthenticationError('Invalid request. ' + authorizationHeader);
   }
   const token = authorizationHeader.split(' ')[1];
   const data: any = jwt.verify(token, tokensecret);

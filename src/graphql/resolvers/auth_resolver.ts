@@ -1,11 +1,18 @@
-import { Arg, Ctx, Field, Mutation, ObjectType, Resolver } from 'type-graphql';
+import {
+  Arg,
+  Authorized,
+  Ctx,
+  Field,
+  Mutation,
+  ObjectType,
+  Resolver,
+} from 'type-graphql';
 import { SignUpPayload, SignInPayload } from '../types/Auth';
 import { ContextType } from '../types/ContextType';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { ApolloError } from 'apollo-server-express';
-import { EmailAddress } from '@sendgrid/helpers/classes';
 
 dotenv.config();
 //non-null-assertion
@@ -30,6 +37,12 @@ export class AuthResponse {
 export class UpdatePasswordResponse {
   @Field((type) => String)
   email: string;
+}
+
+@ObjectType()
+export class UpdatePasswordRequestResponse {
+  @Field((type) => String)
+  token: string;
 }
 
 @Resolver()
@@ -89,23 +102,42 @@ export class Auth_Resolver {
   }
 
   @Mutation(() => UpdatePasswordResponse)
+  @Authorized()
   async resetPassword(
-    @Arg('email') email: string,
     @Arg('passwordInput') passwordInput: string,
     @Ctx() ctx: ContextType
   ): Promise<UpdatePasswordResponse> {
-    const { db } = ctx;
-    const [user] = await db('user_info').where('email', email);
-    if (passwordInput === user.password) {
-      throw new ApolloError('Same password, please ');
-    }
+    const { db, req } = ctx;
+    const authorizationHeader = req.headers.authorization;
+    const token = authorizationHeader?.split(' ')[1];
+    // it is authorized, should have the valid token
+    const { email }: any = jwt.verify(token as string, tokensecret);
+    const hashedPassword = await bcrypt.hash(passwordInput, 10);
+
     const [updatedAccount] = await db('user_info')
       .where('email', email)
-      .update({ password: passwordInput }, ['email']);
+      .update({ password: hashedPassword }, ['email']);
 
     if (!updatedAccount) {
-      throw new ApolloError(`Invalid email address: ${email}`);
+      throw new ApolloError(`Fail to reset password: ${email}`);
     }
     return { ...updatedAccount };
+  }
+
+  @Mutation(() => UpdatePasswordRequestResponse)
+  async resetPasswordRequest(
+    @Arg('email') email: string,
+    @Ctx() ctx: ContextType
+  ): Promise<UpdatePasswordRequestResponse> {
+    const { db } = ctx;
+    const [user] = await db('user_info').where('email', email);
+    if (!user) {
+      throw new ApolloError(`Invalid email address: ${email}`);
+    }
+    // Signing a token with 1 hour of expiration:
+    const token = jwt.sign({ email: email }, tokensecret, {
+      expiresIn: 60 * 60,
+    });
+    return { token };
   }
 }

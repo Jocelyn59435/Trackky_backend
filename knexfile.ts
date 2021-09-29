@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 import dotenv from 'dotenv';
-import path from 'path';
 
-dotenv.config({ path: path.join(__dirname, '.env') });
+dotenv.config();
 
 const { POSTGRES_HOST, POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD } =
   process.env;
@@ -13,7 +12,7 @@ const { POSTGRES_HOST, POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD } =
 //   connection: {
 //     host: POSTGRES_HOST,
 //     user: POSTGRES_USER,
-//     password: POSTGRES_PASSWORD,
+//     password: 'internet',
 //     database: POSTGRES_DB,
 //   },
 //   ssl: {

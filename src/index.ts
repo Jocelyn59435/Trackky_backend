@@ -4,7 +4,6 @@ import { ApolloServer } from 'apollo-server-express';
 import { buildSchemaSync } from 'type-graphql';
 import * as config from '../knexfile';
 import Knex from 'knex';
-import { scrapeProduct } from './utils/scrapeProduct';
 import { User_info_Resolver } from './graphql/resolvers/user_info_resolver';
 import { Product_Resolver } from './graphql/resolvers/product_resolver';
 import { Auth_Resolver } from './graphql/resolvers/auth_resolver';
@@ -35,10 +34,6 @@ const server = new ApolloServer({
 });
 
 server.applyMiddleware({ app });
-
-scrapeProduct(
-  'https://www.chemistwarehouse.com.au/buy/99343/l-39-oreal-paris-revitalift-filler-hyaluronic-acid-anti-wrinkle-serum-30ml'
-);
 
 app.listen(PORT, () => {
   console.log(
