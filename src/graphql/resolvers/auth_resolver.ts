@@ -95,6 +95,10 @@ export class Auth_Resolver {
     @Ctx() ctx: ContextType
   ): Promise<UpdatePasswordResponse> {
     const { db } = ctx;
+    const [user] = await db('user_info').where('email', email);
+    if (passwordInput === user.password) {
+      throw new ApolloError('Same password, please ');
+    }
     const [updatedAccount] = await db('user_info')
       .where('email', email)
       .update({ password: passwordInput }, ['email']);
@@ -102,6 +106,6 @@ export class Auth_Resolver {
     if (!updatedAccount) {
       throw new ApolloError(`Invalid email address: ${email}`);
     }
-    return updatedAccount;
+    return { ...updatedAccount };
   }
 }
