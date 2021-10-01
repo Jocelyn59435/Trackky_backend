@@ -16,6 +16,12 @@ import dotenv from 'dotenv';
 import { ApolloError } from 'apollo-server-express';
 import randomString from 'randomstring';
 import { CheckDate } from '../../utils/checkDate';
+import { emailMessageType } from '../../types';
+import { sendEmail } from '../../utils/sendEmail';
+
+dotenv.config();
+//non-null-assertion
+const clientUrl: string = process.env.FRONTEND_URL!;
 
 dotenv.config();
 //non-null-assertion
@@ -174,6 +180,22 @@ export class Auth_Resolver {
       ['email', 'id', 'reset_password_secure_code']
     );
     console.log(reset_password_secure_code);
+    const emailMessage: emailMessageType = {
+      from: 'trackky@outlook.com', // sender address
+      to: user.email, // list of receivers
+      subject: 'Automated Message: Password Reset Request', // Subject line
+      html: `<p>Hi ${user.first_name},</p>
+             <p>You recently requested to reset your password, Click on the link below to change your password: </p>
+             <a href = "${clientUrl}resetpassword/${reset_password_secure_code}/resetpage">${clientUrl}resetpassword/${reset_password_secure_code}/resetpage</a>
+             <p>The link will expire in two hours.</p>
+             <p>Thank you.</p>
+             <p>Trackky</p>`,
+    };
+    try {
+      sendEmail(emailMessage);
+    } catch (e) {
+      throw new Error(`Failed to send email: ${e.message}`);
+    }
     if (!updatedAccount) {
       throw new ApolloError(`Failed to generate secure code: ${email}`);
     }

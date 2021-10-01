@@ -1,5 +1,4 @@
 import pt from 'puppeteer';
-import sgMail from '@sendgrid/mail';
 
 type productInfo = {
   product_name: string | undefined;
@@ -9,14 +8,6 @@ type productInfo = {
   status: string;
   original_price: number | undefined;
   current_price: number | undefined;
-};
-
-type message = {
-  to: string;
-  from: string;
-  subject: string;
-  text: string;
-  html: string;
 };
 
 export const scrapeProduct = async (url: string): Promise<productInfo> => {
@@ -61,15 +52,6 @@ export const scrapeProduct = async (url: string): Promise<productInfo> => {
     throw new Error('Failed to fetch product name.');
   }
 
-  sendEmail(
-    'jocelynhuang193@gmail.com',
-    'xinxin',
-    productNameText,
-    priceNumber,
-    url,
-    srcText
-  );
-
   return {
     product_name: productNameText,
     product_link: url,
@@ -79,29 +61,4 @@ export const scrapeProduct = async (url: string): Promise<productInfo> => {
     original_price: priceNumber,
     current_price: priceNumber,
   };
-};
-
-const sendEmail = async (
-  userEmail: string,
-  userName: string,
-  productName: string,
-  productPrice: number,
-  productLink: string,
-  productImageUrl: string
-): Promise<boolean> => {
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
-  const msg: message = {
-    to: userEmail,
-    from: 'jocelynhuang193@outlook.com', // Use the email address or domain you verified above
-    subject: `${productName} Price Dropped`,
-    text: `Hi ${userName}, ${productName}'s current price is ${productPrice} now, here is the link: ${productLink}.'`,
-    html: `<image src = ${productImageUrl} alt = "Product Image"/>`,
-  };
-  try {
-    await sgMail.send(msg);
-    return true;
-  } catch (error) {
-    console.error(error.response.body ? error.response.body : error);
-    return false;
-  }
 };
