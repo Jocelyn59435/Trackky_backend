@@ -9,11 +9,12 @@ import {
 } from 'type-graphql';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import { Product } from '../entities/product';
+import { Product, CheckProductPriceResponse } from '../entities/product';
 import { ContextType } from '../types/ContextType';
 import { AddProductPayload } from '../types/AddProductPayload';
 import { ApolloError } from 'apollo-server-errors';
 import { scrapeProduct } from '../../utils/scrapeProduct';
+import { isValidUrl } from '../../utils/checkUrl';
 
 dotenv.config();
 //non-null-assertion
@@ -21,15 +22,42 @@ const tokensecret: string = process.env.TOKEN_SECRET!;
 
 @Resolver()
 export class Product_Resolver {
-  @Query(() => Product)
+  @Query(() => [Product])
   @Authorized()
-  async getProductById(
-    @Arg('id') id: string,
+  async getProductByUserId(
+    @Arg('userId') userId: number,
     @Ctx() ctx: ContextType
-  ): Promise<Product> {
+  ): Promise<Product[]> {
     const { db } = ctx;
-    const [product] = await db('product').where('id', id).columns('*');
+    const product = await db('product').where('id', userId).columns('*');
     return product;
+  }
+
+  @Query(() => CheckProductPriceResponse)
+  @Authorized()
+  async checkProductPriceByUrl(
+    @Arg('url') url: string,
+    @Ctx() ctx: ContextType
+  ): Promise<CheckProductPriceResponse> {
+    let product_info: any = {};
+
+    if (!isValidUrl(url)) {
+      throw new ApolloError(`This URL is not valid: ${url}`);
+    }
+
+    try {
+      product_info = await scrapeProduct(url);
+    } catch (e) {
+      throw new ApolloError(`Failed to fetch price: ${e.message}`);
+    }
+    //Scrape product info via the link
+
+    return {
+      product_name: product_info.product_name as string,
+      product_image_src: product_info.product_image_src as string,
+      product_link: url,
+      original_price: product_info.original_price as number,
+    };
   }
 
   @Mutation(() => Product)

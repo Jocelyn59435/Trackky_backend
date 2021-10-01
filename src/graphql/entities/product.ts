@@ -15,6 +15,8 @@ export class Product {
   @Field((type) => String)
   product_image_src!: string;
   @Field((type) => String)
+  product_link!: string;
+  @Field((type) => String)
   platform!: string;
   @Field((type) => productStatus)
   status!: productStatus;
@@ -27,11 +29,26 @@ export class Product {
   @Field((type) => Float)
   desired_price!: number;
   @Field()
-  price_update_time: Date;
+  price_update_time: number;
   @Field()
-  email_sent_time: Date;
+  email_sent_time: number;
   @Field()
   created_at: Date;
   @Field()
   updated_at: Date;
+}
+
+@ObjectType()
+export class CheckProductPriceResponse {
+  @Field((type) => String)
+  product_name: string;
+
+  @Field((type) => String)
+  product_link: string;
+
+  @Field((type) => String)
+  product_image_src: string;
+
+  @Field((type) => Float)
+  original_price!: number;
 }

@@ -1,16 +1,16 @@
 import pt from 'puppeteer';
 
-type productInfo = {
+export type ProductInfo = {
   product_name: string | undefined;
   product_link: string;
   product_image_src: string | undefined;
-  platform: string;
-  status: string;
+  platform?: string;
+  status?: string;
   original_price: number | undefined;
-  current_price: number | undefined;
+  current_price?: number | undefined;
 };
 
-export const scrapeProduct = async (url: string): Promise<productInfo> => {
+export const scrapeProduct = async (url: string): Promise<ProductInfo> => {
   const browser = await pt.launch();
   const page = await browser.newPage();
   await page.goto(url);
