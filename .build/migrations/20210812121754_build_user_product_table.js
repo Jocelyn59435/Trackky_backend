@@ -4,10 +4,12 @@ exports.down = exports.up = void 0;
 async function up(knex) {
     await knex.schema.createTable('user_info', (table) => {
         table.increments('id');
-        table.string('firstName').notNullable();
-        table.string('lastName').notNullable();
+        table.string('first_name').notNullable();
+        table.string('last_name').notNullable();
         table.string('email').notNullable();
         table.string('password').notNullable();
+        table.string('reset_password_secure_code');
+        table.string('secure_code_update_time');
         table.timestamps(true, true);
     });
     await knex.schema.createTable('product', (table) => {
@@ -26,8 +28,8 @@ async function up(knex) {
         table.float('original_price').notNullable();
         table.float('current_price');
         table.float('desired_price').notNullable();
-        table.timestamp('price_update_time');
-        table.timestamp('email_sent_time');
+        table.string('price_update_time');
+        table.string('email_sent_time');
         table.timestamps(true, true);
     });
 }

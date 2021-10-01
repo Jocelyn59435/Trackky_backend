@@ -19,13 +19,13 @@ __decorate([
     class_validator_1.IsNotEmpty(),
     class_validator_1.MaxLength(15),
     __metadata("design:type", String)
-], SignUpPayload.prototype, "firstName", void 0);
+], SignUpPayload.prototype, "first_name", void 0);
 __decorate([
     type_graphql_1.Field((type) => String),
     class_validator_1.IsNotEmpty(),
     class_validator_1.MaxLength(15),
     __metadata("design:type", String)
-], SignUpPayload.prototype, "lastName", void 0);
+], SignUpPayload.prototype, "last_name", void 0);
 __decorate([
     type_graphql_1.Field((type) => String),
     class_validator_1.IsNotEmpty(),

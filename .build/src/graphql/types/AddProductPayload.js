@@ -23,54 +23,13 @@ __decorate([
     type_graphql_1.Field((type) => String),
     class_validator_1.IsNotEmpty(),
     __metadata("design:type", String)
-], AddProductPayload.prototype, "product_name", void 0);
-__decorate([
-    type_graphql_1.Field((type) => String),
-    class_validator_1.IsNotEmpty(),
-    __metadata("design:type", String)
-], AddProductPayload.prototype, "product_image_src", void 0);
-__decorate([
-    type_graphql_1.Field((type) => String),
-    class_validator_1.IsNotEmpty(),
-    __metadata("design:type", String)
-], AddProductPayload.prototype, "platform", void 0);
-__decorate([
-    type_graphql_1.Field((type) => product_status_1.productStatus),
-    class_validator_1.IsNotEmpty(),
-    __metadata("design:type", String)
-], AddProductPayload.prototype, "status", void 0);
-__decorate([
-    type_graphql_1.Field((type) => String),
-    class_validator_1.IsNotEmpty(),
-    __metadata("design:type", String)
-], AddProductPayload.prototype, "user_id", void 0);
-__decorate([
-    type_graphql_1.Field((type) => type_graphql_1.Float),
-    class_validator_1.IsNotEmpty(),
-    class_validator_1.IsPositive(),
-    __metadata("design:type", Number)
-], AddProductPayload.prototype, "original_price", void 0);
-__decorate([
-    type_graphql_1.Field((type) => type_graphql_1.Float),
-    class_validator_1.IsNotEmpty(),
-    class_validator_1.IsPositive(),
-    __metadata("design:type", Number)
-], AddProductPayload.prototype, "current_price", void 0);
+], AddProductPayload.prototype, "product_link", void 0);
 __decorate([
     type_graphql_1.Field((type) => type_graphql_1.Float),
     class_validator_1.IsNotEmpty(),
     class_validator_1.IsPositive(),
     __metadata("design:type", Number)
 ], AddProductPayload.prototype, "desired_price", void 0);
-__decorate([
-    type_graphql_1.Field(),
-    class_validator_1.IsNotEmpty(),
-    __metadata("design:type", Date)
-], AddProductPayload.prototype, "price_update_time", void 0);
-__decorate([
-    type_graphql_1.Field(),
-    __metadata("design:type", Date)
-], AddProductPayload.prototype, "email_sent_time", void 0);
 AddProductPayload = __decorate([
     type_graphql_1.InputType()
 ], AddProductPayload);

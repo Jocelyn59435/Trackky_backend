@@ -15,7 +15,6 @@ export const authChecker: AuthChecker<ContextType> = async ({
   info,
 }) => {
   const { db, req } = context;
-  console.log(req.headers);
   const authorizationHeader = req.headers.authorization;
   if (!authorizationHeader) {
     throw new AuthenticationError('Invalid request. ' + authorizationHeader);

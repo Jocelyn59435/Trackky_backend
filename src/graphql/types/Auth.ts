@@ -6,12 +6,12 @@ export class SignUpPayload {
   @Field((type) => String)
   @IsNotEmpty()
   @MaxLength(15)
-  firstName: string;
+  first_name: string;
 
   @Field((type) => String)
   @IsNotEmpty()
   @MaxLength(15)
-  lastName: string;
+  last_name: string;
 
   @Field((type) => String)
   @IsNotEmpty()

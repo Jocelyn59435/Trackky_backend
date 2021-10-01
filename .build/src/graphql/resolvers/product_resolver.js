@@ -11,12 +11,21 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Product_Resolver = void 0;
 const type_graphql_1 = require("type-graphql");
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const dotenv_1 = __importDefault(require("dotenv"));
 const product_1 = require("../entities/product");
 const AddProductPayload_1 = require("../types/AddProductPayload");
 const apollo_server_errors_1 = require("apollo-server-errors");
+const scrapeProduct_1 = require("../../utils/scrapeProduct");
+dotenv_1.default.config();
+//non-null-assertion
+const tokensecret = process.env.TOKEN_SECRET;
 let Product_Resolver = class Product_Resolver {
     async getProductById(id, ctx) {
         const { db } = ctx;
@@ -24,17 +33,26 @@ let Product_Resolver = class Product_Resolver {
         return product;
     }
     async addProduct(input, ctx) {
-        const { db } = ctx;
+        const { db, req } = ctx;
+        //Scrape product info via the link
+        const product_info = await scrapeProduct_1.scrapeProduct(input.product_link);
+        // Get userId from token
+        const authorizationHeader = req.headers.authorization;
+        const token = authorizationHeader === null || authorizationHeader === void 0 ? void 0 : authorizationHeader.split(' ')[1];
+        // it is authorized, should have the valid token
+        const { email } = jsonwebtoken_1.default.verify(token, tokensecret);
+        const [user] = await db('user_info').where('email', email);
+        const userId = user.id;
         const existingProduct = await db('product').where({
-            user_id: input.user_id,
-            product_name: input.product_name,
+            user_id: userId,
+            product_name: product_info.product_name,
         });
         if (existingProduct.length) {
-            throw new apollo_server_errors_1.ApolloError(`This product has been added: ${input.product_name}`);
+            throw new apollo_server_errors_1.ApolloError(`This product has been added: ${product_info.product_name}`);
         }
         try {
             const [product] = await db('product')
-                .insert({ ...input })
+                .insert({ ...product_info, ...input, user_id: userId })
                 .returning('*');
             return product;
         }

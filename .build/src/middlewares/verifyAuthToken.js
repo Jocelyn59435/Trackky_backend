@@ -14,7 +14,7 @@ const authChecker = async ({ root, args, context, info, }) => {
     const { db, req } = context;
     const authorizationHeader = req.headers.authorization;
     if (!authorizationHeader) {
-        throw new apollo_server_errors_1.AuthenticationError('Invalid request.');
+        throw new apollo_server_errors_1.AuthenticationError('Invalid request. ' + authorizationHeader);
     }
     const token = authorizationHeader.split(' ')[1];
     const data = jsonwebtoken_1.default.verify(token, tokensecret);

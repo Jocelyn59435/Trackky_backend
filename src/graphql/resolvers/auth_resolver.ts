@@ -5,6 +5,7 @@ import {
   Field,
   Mutation,
   ObjectType,
+  Query,
   Resolver,
 } from 'type-graphql';
 import { SignUpPayload, SignInPayload } from '../types/Auth';
@@ -13,6 +14,8 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { ApolloError } from 'apollo-server-express';
+import randomString from 'randomstring';
+import { CheckDate } from '../../utils/checkDate';
 
 dotenv.config();
 //non-null-assertion
@@ -24,25 +27,39 @@ export class AuthResponse {
   token: string;
 
   @Field((type) => String)
-  firstName: string;
+  first_name: string;
 
   @Field((type) => String)
-  lastName: string;
+  last_name: string;
 
   @Field((type) => String)
   email: string;
+
+  @Field((type) => Number)
+  id: number;
 }
 
 @ObjectType()
-export class UpdatePasswordResponse {
+export class ResetPasswordResponse {
   @Field((type) => String)
   email: string;
+
+  @Field((type) => Number)
+  id: number;
 }
 
 @ObjectType()
-export class UpdatePasswordRequestResponse {
+export class ResetPasswordRequestResponse {
+  @Field((type) => Number)
+  id: number;
+}
+
+@ObjectType()
+export class CheckSecureCodeResponse {
+  @Field((type) => Boolean)
+  isValidCode: boolean;
   @Field((type) => String)
-  token: string;
+  email: string;
 }
 
 @Resolver()
@@ -56,21 +73,24 @@ export class Auth_Resolver {
     //use bcrypt to hash password
     const hashedPassword = await bcrypt.hash(input.password, 10);
     const email = input.email.toLowerCase();
+
     //validate user input
     const existingEmail = await db('user_info').where('email', email);
     if (existingEmail.length) {
       throw new ApolloError(`This email address has been registered: ${email}`);
     }
+
     // insert data to database
     const [user] = await db('user_info')
       .insert({ ...input, password: hashedPassword })
       .returning('*');
-    const token = jwt.sign({ email: input.email }, tokensecret);
+    const token = jwt.sign({ email: input.email, id: user.id }, tokensecret);
     return {
       token,
       email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      id: user.id,
     };
   }
 
@@ -92,52 +112,96 @@ export class Auth_Resolver {
       throw new ApolloError(`Invalid credentials.`);
     }
 
-    const token = jwt.sign({ email: input.email }, tokensecret);
+    const token = jwt.sign({ email: input.email, id: user.id }, tokensecret);
     return {
       token,
       email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      id: user.id,
     };
   }
 
-  @Mutation(() => UpdatePasswordResponse)
-  @Authorized()
+  @Mutation(() => ResetPasswordResponse)
   async resetPassword(
     @Arg('passwordInput') passwordInput: string,
+    @Arg('reset_password_secure_code') reset_password_secure_code: string,
     @Ctx() ctx: ContextType
-  ): Promise<UpdatePasswordResponse> {
-    const { db, req } = ctx;
-    const authorizationHeader = req.headers.authorization;
-    const token = authorizationHeader?.split(' ')[1];
-    // it is authorized, should have the valid token
-    const { email }: any = jwt.verify(token as string, tokensecret);
+  ): Promise<ResetPasswordResponse> {
+    const { db } = ctx;
+    const [user] = await db('user_info').where(
+      'reset_password_secure_code',
+      reset_password_secure_code
+    );
+    const isValidCode: boolean = CheckDate(
+      parseInt(user.secure_code_update_time),
+      2
+    );
+    if (!isValidCode) {
+      throw new ApolloError(`Expired secure code.`);
+    }
+    if (!user) {
+      throw new ApolloError(`Invalid secure code.`);
+    }
     const hashedPassword = await bcrypt.hash(passwordInput, 10);
-
     const [updatedAccount] = await db('user_info')
-      .where('email', email)
-      .update({ password: hashedPassword }, ['email']);
+      .where('reset_password_secure_code', reset_password_secure_code)
+      .update({ password: hashedPassword }, ['email', 'id']);
 
     if (!updatedAccount) {
-      throw new ApolloError(`Fail to reset password: ${email}`);
+      throw new ApolloError(`Fail to reset password.`);
     }
     return { ...updatedAccount };
   }
 
-  @Mutation(() => UpdatePasswordRequestResponse)
+  @Mutation(() => ResetPasswordRequestResponse)
   async resetPasswordRequest(
     @Arg('email') email: string,
     @Ctx() ctx: ContextType
-  ): Promise<UpdatePasswordRequestResponse> {
+  ): Promise<ResetPasswordRequestResponse> {
     const { db } = ctx;
     const [user] = await db('user_info').where('email', email);
     if (!user) {
       throw new ApolloError(`Invalid email address: ${email}`);
     }
-    // Signing a token with 1 hour of expiration:
-    const token = jwt.sign({ email: email }, tokensecret, {
-      expiresIn: 60 * 60,
-    });
-    return { token };
+    const reset_password_secure_code = randomString.generate();
+    console.log(reset_password_secure_code);
+    const [updatedAccount] = await db('user_info').where('email', email).update(
+      {
+        reset_password_secure_code: reset_password_secure_code,
+        secure_code_update_time: Date.now(),
+      },
+      ['email', 'id', 'reset_password_secure_code']
+    );
+    console.log(reset_password_secure_code);
+    if (!updatedAccount) {
+      throw new ApolloError(`Failed to generate secure code: ${email}`);
+    }
+    return {
+      id: user.id,
+    };
+  }
+
+  @Query(() => CheckSecureCodeResponse)
+  async checkSecureCode(
+    @Arg('reset_password_secure_code') reset_password_secure_code: string,
+    @Ctx() ctx: ContextType
+  ): Promise<CheckSecureCodeResponse> {
+    const { db } = ctx;
+    const [user] = await db('user_info').where(
+      'reset_password_secure_code',
+      reset_password_secure_code
+    );
+    if (!user) {
+      throw new ApolloError(`Invalid secure code.`);
+    }
+    const isValidCode: boolean = CheckDate(
+      parseInt(user.secure_code_update_time),
+      2
+    );
+    if (!isValidCode) {
+      throw new ApolloError(`Expired secure code.`);
+    }
+    return { isValidCode, email: user.email };
   }
 }

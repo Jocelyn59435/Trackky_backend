@@ -29,7 +29,6 @@ const apollo_server_express_1 = require("apollo-server-express");
 const type_graphql_1 = require("type-graphql");
 const config = __importStar(require("../knexfile"));
 const knex_1 = __importDefault(require("knex"));
-const scrapeProduct_1 = require("./utils/scrapeProduct");
 const user_info_resolver_1 = require("./graphql/resolvers/user_info_resolver");
 const product_resolver_1 = require("./graphql/resolvers/product_resolver");
 const auth_resolver_1 = require("./graphql/resolvers/auth_resolver");
@@ -54,7 +53,6 @@ const server = new apollo_server_express_1.ApolloServer({
     playground: true,
 });
 server.applyMiddleware({ app });
-scrapeProduct_1.scrapeProduct('https://www.chemistwarehouse.com.au/buy/99343/l-39-oreal-paris-revitalift-filler-hyaluronic-acid-anti-wrinkle-serum-30ml');
 app.listen(PORT, () => {
     console.log(`🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`);
 });
