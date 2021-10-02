@@ -13,7 +13,7 @@ export type ProductInfo = {
 export const scrapeProduct = async (url: string): Promise<ProductInfo> => {
   const browser = await pt.launch();
   const page = await browser.newPage();
-  await page.goto(url);
+  await page.goto(url, { waitUntil: 'load', timeout: 0 });
 
   //get price
   const [priceElement] = await page.$x(

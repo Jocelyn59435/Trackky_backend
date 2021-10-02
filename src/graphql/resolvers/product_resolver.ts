@@ -41,10 +41,6 @@ export class Product_Resolver {
   ): Promise<CheckProductPriceResponse> {
     let product_info: any = {};
 
-    if (!isValidUrl(url)) {
-      throw new ApolloError(`This URL is not valid: ${url}`);
-    }
-
     try {
       product_info = await scrapeProduct(url);
     } catch (e) {
