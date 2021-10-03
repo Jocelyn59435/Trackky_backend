@@ -14,7 +14,6 @@ import { ContextType } from '../types/ContextType';
 import { AddProductPayload } from '../types/AddProductPayload';
 import { ApolloError } from 'apollo-server-errors';
 import { scrapeProduct } from '../../utils/scrapeProduct';
-import { isValidUrl } from '../../utils/checkUrl';
 
 dotenv.config();
 //non-null-assertion
@@ -25,11 +24,14 @@ export class Product_Resolver {
   @Query(() => [Product])
   @Authorized()
   async getProductByUserId(
-    @Arg('userId') userId: number,
+    @Arg('userId') userId: string,
+    @Arg('status') status: string,
     @Ctx() ctx: ContextType
   ): Promise<Product[]> {
     const { db } = ctx;
-    const product = await db('product').where('id', userId).columns('*');
+    const product = await db('product')
+      .where({ user_id: userId, status: status })
+      .columns('*');
     return product;
   }
 
@@ -73,9 +75,20 @@ export class Product_Resolver {
     // it is authorized, should have the valid token
     const { email }: any = jwt.verify(token as string, tokensecret);
     const [user] = await db('user_info').where('email', email);
-    const userId = user.id;
+    const userIdFromToken = user.id;
+    const userIdFromClient = input.userId;
+    console.log(
+      `userTokenIdtype: ${typeof userIdFromToken}----${userIdFromToken}`
+    );
+    console.log(
+      `userClientIdtype: ${typeof userIdFromClient}----${userIdFromClient}`
+    );
+
+    if (userIdFromClient !== userIdFromToken.toString()) {
+      throw new ApolloError(`Invalid Request: Wrong identification.`);
+    }
     const existingProduct = await db('product').where({
-      user_id: userId,
+      user_id: userIdFromToken,
       product_name: product_info.product_name,
     });
     if (existingProduct.length) {
@@ -83,10 +96,10 @@ export class Product_Resolver {
         `This product has been added: ${product_info.product_name}`
       );
     }
-
+    const { userId, ...restInput } = input;
     try {
       const [product] = await db('product')
-        .insert({ ...product_info, ...input, user_id: userId })
+        .insert({ ...product_info, ...restInput, user_id: userIdFromToken })
         .returning('*');
       return product;
     } catch (e) {

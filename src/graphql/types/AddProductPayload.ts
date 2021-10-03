@@ -17,4 +17,8 @@ export class AddProductPayload {
   @IsNotEmpty()
   @IsPositive()
   desired_price: number;
+
+  @Field((type) => String)
+  @IsNotEmpty()
+  userId: number;
 }

@@ -25,7 +25,7 @@ export class Product {
   @Field((type) => Float)
   original_price!: number;
   @Field((type) => Float)
-  current_price!: number;
+  current_price: number;
   @Field((type) => Float)
   desired_price!: number;
   @Field()
