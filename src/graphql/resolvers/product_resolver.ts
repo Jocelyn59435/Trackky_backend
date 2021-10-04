@@ -2,8 +2,10 @@ import {
   Arg,
   Authorized,
   Ctx,
+  Field,
   Int,
   Mutation,
+  ObjectType,
   Query,
   Resolver,
 } from 'type-graphql';
@@ -18,6 +20,12 @@ import { scrapeProduct } from '../../utils/scrapeProduct';
 dotenv.config();
 //non-null-assertion
 const tokensecret: string = process.env.TOKEN_SECRET!;
+
+@ObjectType()
+export class UpdateProductResponse {
+  @Field((type) => String)
+  id: string;
+}
 
 @Resolver()
 export class Product_Resolver {
@@ -107,13 +115,46 @@ export class Product_Resolver {
     }
   }
 
-  @Mutation(() => Int)
+  @Mutation(() => UpdateProductResponse)
   @Authorized()
   async deleteProduct(
     @Arg('id') id: string,
     @Arg('user_id') user_id: string,
     @Ctx() ctx: ContextType
-  ): Promise<number> {
+  ): Promise<UpdateProductResponse> {
+    const { db } = ctx;
+
+    try {
+      const [product] = await db('product').where({
+        id: parseInt(id),
+        user_id: parseInt(user_id),
+      });
+      if (!product) {
+        throw new ApolloError('Product not found.');
+      }
+      const [updatedProduct] = await db('product')
+        .where({
+          id: id,
+          user_id: user_id,
+        })
+        .del(['id']);
+      if (!updatedProduct) {
+        throw new ApolloError(`Failed to delete the product.`);
+      }
+      return { ...updatedProduct };
+    } catch (e) {
+      throw new ApolloError(e.message);
+    }
+  }
+
+  @Mutation(() => UpdateProductResponse)
+  @Authorized()
+  async updateDesiredPrice(
+    @Arg('id') id: string,
+    @Arg('user_id') user_id: string,
+    @Arg('desired_price') desired_price: number,
+    @Ctx() ctx: ContextType
+  ): Promise<UpdateProductResponse> {
     const { db } = ctx;
 
     try {
@@ -124,12 +165,16 @@ export class Product_Resolver {
       if (!product) {
         throw new ApolloError('Product not found.');
       }
-      return await db('product')
+      const [updatedProduct] = await db('product')
         .where({
           id: id,
           user_id: user_id,
         })
-        .del();
+        .update({ desired_price: desired_price }, ['id']);
+      if (!updatedProduct) {
+        throw new ApolloError(`Failed to udpate deisred price.`);
+      }
+      return { ...updatedProduct };
     } catch (e) {
       throw new ApolloError(e.message);
     }
