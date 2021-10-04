@@ -8,6 +8,7 @@ import { User_info_Resolver } from './graphql/resolvers/user_info_resolver';
 import { Product_Resolver } from './graphql/resolvers/product_resolver';
 import { Auth_Resolver } from './graphql/resolvers/auth_resolver';
 import { authChecker } from './middlewares/verifyAuthToken';
+import { updateAllProducts } from './utils/updateCurrentPrice';
 
 const PORT = process.env.PORT || 4000;
 
@@ -19,6 +20,9 @@ const schema = buildSchemaSync({
 const app = express();
 
 export const db = Knex(config);
+
+// update product price every 3 hours
+setInterval(updateAllProducts, 3 * 3600 * 1000);
 
 const server = new ApolloServer({
   schema,
