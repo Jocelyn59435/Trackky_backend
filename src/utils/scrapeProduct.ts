@@ -3,7 +3,8 @@ import { ProductInfo } from '../types';
 
 const scrapeProduct = async (url: string): Promise<ProductInfo> => {
   const browser = await pt.launch({
-    args: ['--no-sandbox'],
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
   });
   const page = await browser.newPage();
   await page.goto(url, { waitUntil: 'load', timeout: 0 });
