@@ -13,6 +13,7 @@ const updateAllProducts = async (): Promise<void> => {
   } catch (e) {
     console.log('Errors from updateAllProducts' + e.message);
   }
+  console.log('Called.');
 };
 
 export default updateAllProducts;
