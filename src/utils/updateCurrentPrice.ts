@@ -8,7 +8,7 @@ const updateCurrentPrice = async (
   productId: string,
   productLink: string,
   desired_price: number
-): Promise<void> => {
+): Promise<string> => {
   const browser = await pt.launch({
     headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
@@ -60,18 +60,20 @@ const updateCurrentPrice = async (
       };
 
       sendEmail(emailMessage);
-      // update email_sent_time
+      // update email_sent_time and status
       const [updatedProduct] = await db('product')
         .where('id', productId)
         .update(
           {
             email_sent_time: Date.now(),
+            status: 'achieved',
           },
           ['id']
         );
       if (!updatedProduct) {
         throw new Error('Fail to update email_sent_time.');
       }
+      return updatedProduct.status;
     } catch (e) {
       console.log('Error from updateCurrentPrice(): ' + e.message);
     }
@@ -87,18 +89,7 @@ const updateCurrentPrice = async (
   if (!updatedProduct) {
     throw new Error('Fail to update current_price.');
   }
+  return updatedProduct.status;
 };
 
-export const updateAllProducts = async (): Promise<void> => {
-  try {
-    const products = await db('product').columns('*');
-    if (!products) {
-      throw new Error('Failed to fetch products.');
-    }
-    products.forEach((p) => {
-      updateCurrentPrice(p.user_id, p.id, p.product_link, p.desired_price);
-    });
-  } catch (e) {
-    console.log('Errors from updateAllProducts' + e.message);
-  }
-};
+export default updateCurrentPrice;

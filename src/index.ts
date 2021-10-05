@@ -8,7 +8,7 @@ import { User_info_Resolver } from './graphql/resolvers/user_info_resolver';
 import { Product_Resolver } from './graphql/resolvers/product_resolver';
 import { Auth_Resolver } from './graphql/resolvers/auth_resolver';
 import { authChecker } from './middlewares/verifyAuthToken';
-import { updateAllProducts } from './utils/updateCurrentPrice';
+import updateAllProducts from './utils/updateCurrentPrice';
 
 const PORT = process.env.PORT || 4000;
 

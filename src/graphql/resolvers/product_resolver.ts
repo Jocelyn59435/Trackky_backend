@@ -15,7 +15,7 @@ import { Product, CheckProductPriceResponse } from '../entities/product';
 import { ContextType } from '../types/ContextType';
 import { AddProductPayload } from '../types/AddProductPayload';
 import { ApolloError } from 'apollo-server-errors';
-import { scrapeProduct } from '../../utils/scrapeProduct';
+import scrapeProduct from '../../utils/scrapeProduct';
 
 dotenv.config();
 //non-null-assertion

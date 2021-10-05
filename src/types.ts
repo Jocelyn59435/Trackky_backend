@@ -13,3 +13,13 @@ export type emailMessageType = {
   text?: string;
   html?: string;
 };
+
+export type ProductInfo = {
+  product_name: string | undefined;
+  product_link: string;
+  product_image_src: string | undefined;
+  platform?: string;
+  status?: string;
+  original_price: number | undefined;
+  current_price?: number | undefined;
+};

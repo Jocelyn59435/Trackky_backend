@@ -1,16 +1,7 @@
 import pt from 'puppeteer';
+import { ProductInfo } from '../types';
 
-export type ProductInfo = {
-  product_name: string | undefined;
-  product_link: string;
-  product_image_src: string | undefined;
-  platform?: string;
-  status?: string;
-  original_price: number | undefined;
-  current_price?: number | undefined;
-};
-
-export const scrapeProduct = async (url: string): Promise<ProductInfo> => {
+const scrapeProduct = async (url: string): Promise<ProductInfo> => {
   const browser = await pt.launch({
     headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
@@ -65,3 +56,5 @@ export const scrapeProduct = async (url: string): Promise<ProductInfo> => {
     current_price: priceNumber,
   };
 };
+
+export default scrapeProduct;
