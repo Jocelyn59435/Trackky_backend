@@ -2,7 +2,15 @@ import pt from 'puppeteer';
 import { sendEmail } from './sendEmail';
 import { emailMessageType } from '../types';
 import { db } from '../index';
-import { setTimeout } from 'timers/promises';
+
+let timeOut;
+
+const sleep = (delaytime) => {
+  if (timeOut) {
+    clearTimeout(timeOut);
+  }
+  timeOut = setTimeout(delaytime);
+};
 
 const updateCurrentPrice = async (
   userId: string,
@@ -10,7 +18,7 @@ const updateCurrentPrice = async (
   productLink: string,
   desired_price: number
 ): Promise<string> => {
-  await setTimeout(10 * 1000);
+  await sleep(10 * 1000);
 
   const browser = await pt.launch({
     headless: true,
