@@ -3,13 +3,8 @@ import { sendEmail } from './sendEmail';
 import { emailMessageType } from '../types';
 import { db } from '../index';
 
-let timeOut;
-
-const sleep = (delaytime) => {
-  if (timeOut) {
-    clearTimeout(timeOut);
-  }
-  timeOut = setTimeout(delaytime);
+const sleep = (milliseconds) => {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
 };
 
 const updateCurrentPrice = async (
@@ -18,7 +13,7 @@ const updateCurrentPrice = async (
   productLink: string,
   desired_price: number
 ): Promise<string> => {
-  await sleep(10 * 1000);
+  await sleep(10000);
 
   const browser = await pt.launch({
     headless: true,
