@@ -9,8 +9,11 @@ import { Product_Resolver } from './graphql/resolvers/product_resolver';
 import { Auth_Resolver } from './graphql/resolvers/auth_resolver';
 import { authChecker } from './middlewares/verifyAuthToken';
 import updateAllProducts from './utils/updateAllProducts';
+import EventEmitter from 'events';
 
 const PORT = process.env.PORT || 4000;
+const emitter = new EventEmitter();
+emitter.setMaxListeners(100);
 
 const schema = buildSchemaSync({
   resolvers: [User_info_Resolver, Product_Resolver, Auth_Resolver],
