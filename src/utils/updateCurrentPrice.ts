@@ -2,6 +2,7 @@ import pt from 'puppeteer';
 import { sendEmail } from './sendEmail';
 import { emailMessageType } from '../types';
 import { db } from '../index';
+import { setTimeout } from 'timers/promises';
 
 const updateCurrentPrice = async (
   userId: string,
@@ -9,6 +10,8 @@ const updateCurrentPrice = async (
   productLink: string,
   desired_price: number
 ): Promise<string> => {
+  await setTimeout(10 * 1000);
+
   const browser = await pt.launch({
     headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
@@ -89,6 +92,7 @@ const updateCurrentPrice = async (
   if (!updatedProduct) {
     throw new Error('Fail to update current_price.');
   }
+  browser?.close();
   return updatedProduct.status;
 };
 

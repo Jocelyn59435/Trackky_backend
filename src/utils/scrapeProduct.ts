@@ -45,7 +45,7 @@ const scrapeProduct = async (url: string): Promise<ProductInfo> => {
   } else {
     throw new Error('Failed to fetch product name.');
   }
-
+  browser?.close();
   return {
     product_name: productNameText,
     product_link: url,
