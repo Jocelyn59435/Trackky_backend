@@ -25,8 +25,8 @@ const app = express();
 export const db = Knex(config);
 
 // update product price every 10 min
-setInterval(updateAllProducts, 10 * 1000 * 60);
-process.on('warning', (e) => console.warn(e.stack));
+//setInterval(updateAllProducts, 10 * 1000 * 60);
+//process.on('warning', (e) => console.warn(e.stack));
 const server = new ApolloServer({
   schema,
   context: ({ req, res }) => {
