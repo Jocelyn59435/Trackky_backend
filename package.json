@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "lint": "eslint . --ext .ts",
     "build": "npx tsc",
     "dev": "nodemon src/index.ts",
     "start": "npm run build && node --trace-warnings ./.build/src/index.js",
@@ -40,8 +41,8 @@
     "@types/nodemailer": "^6.4.4",
     "@types/randomstring": "^1.1.7",
     "@types/ws": "^7.4.7",
-    "@typescript-eslint/eslint-plugin": "^4.29.1",
-    "@typescript-eslint/parser": "^4.29.1",
+    "@typescript-eslint/eslint-plugin": "^4.33.0",
+    "@typescript-eslint/parser": "^4.33.0",
     "eslint": "^7.32.0",
     "jest": "^27.0.6",
     "nodemon": "^2.0.12",

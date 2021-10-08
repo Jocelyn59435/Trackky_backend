@@ -8,6 +8,7 @@ import { User_info_Resolver } from './graphql/resolvers/user_info_resolver';
 import { Product_Resolver } from './graphql/resolvers/product_resolver';
 import { Auth_Resolver } from './graphql/resolvers/auth_resolver';
 import { authChecker } from './middlewares/verifyAuthToken';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import updateAllProducts from './utils/updateAllProducts';
 import EventEmitter from 'events';
 

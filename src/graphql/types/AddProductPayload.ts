@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsPositive, MinLength } from 'class-validator';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { IsNotEmpty, IsPositive } from 'class-validator';
 import { Field, Float, InputType } from 'type-graphql';
 import { productStatus } from '../entities/enum/product_status';
 import { registerEnumType } from 'type-graphql';

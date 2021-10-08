@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import nodeMailer from 'nodemailer';
 import dotenv from 'dotenv';
 import { emailMessageType } from '../types';

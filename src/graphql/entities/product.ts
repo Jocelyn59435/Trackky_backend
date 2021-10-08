@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Field, ObjectType, ID, Float } from 'type-graphql';
 import { productStatus } from './enum/product_status';
 import { registerEnumType } from 'type-graphql';
