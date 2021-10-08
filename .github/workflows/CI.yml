@@ -28,6 +28,9 @@ jobs:
       - name: install dependencies
         run: npm ci
 
+      - name: check code
+        run: npm run lint
+
       - name: Test 🚨
         run: npm test
 
