@@ -4,7 +4,7 @@ For frontend, please refer to [Trackky_frontend](https://github.com/Jocelyn59435
 ## **1. Link**
 https://trackkybackend.herokuapp.com/graphql
 ## **2. Status Badge**
-
+[![.github/workflows/CD.yml](https://github.com/Jocelyn59435/Trackky_backend/actions/workflows/CD.yml/badge.svg)](https://github.com/Jocelyn59435/Trackky_backend/actions/workflows/CD.yml)
 ## **3. Main Tech Stacks**
 - Express
 - TypeGraphql
