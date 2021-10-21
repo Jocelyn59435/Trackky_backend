@@ -3,17 +3,13 @@ import { sendEmail } from './sendEmail';
 import { emailMessageType } from '../types';
 import { db } from '../index';
 
-const sleep = (milliseconds) => {
-  return new Promise((resolve) => setTimeout(resolve, milliseconds));
-};
-
 const updateCurrentPrice = async (
   userId: string,
   productId: string,
   productLink: string,
   desired_price: number
 ): Promise<string> => {
-  await sleep(10000);
+  console.log(`Start scraping for product: ${productId}`);
 
   const browser = await pt.launch({
     headless: true,
@@ -46,7 +42,7 @@ const updateCurrentPrice = async (
         throw new Error('Product not found.');
       }
       const [user] = await db('user_info').where({
-        user_id: parseInt(userId),
+        id: parseInt(userId),
       });
       if (!user) {
         throw new Error('User not found.');
@@ -95,6 +91,7 @@ const updateCurrentPrice = async (
   if (!updatedProduct) {
     throw new Error('Fail to update current_price.');
   }
+  console.log('Update current price.');
   browser?.close();
   return updatedProduct.status;
 };

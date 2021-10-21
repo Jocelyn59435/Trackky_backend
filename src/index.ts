@@ -8,6 +8,7 @@ import { User_info_Resolver } from './graphql/resolvers/user_info_resolver';
 import { Product_Resolver } from './graphql/resolvers/product_resolver';
 import { Auth_Resolver } from './graphql/resolvers/auth_resolver';
 import { authChecker } from './middlewares/verifyAuthToken';
+import cron from 'node-cron';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import updateAllProducts from './utils/updateAllProducts';
 import EventEmitter from 'events';
@@ -25,9 +26,12 @@ const app = express();
 
 export const db = Knex(config);
 
-// update product price every 10 min
-//setInterval(updateAllProducts, 10 * 1000 * 60);
-//process.on('warning', (e) => console.warn(e.stack));
+// update all product's current price every one minute
+//cron.schedule('*/1 * * * *', updateAllProducts);
+
+// update all product's current price every five hours
+cron.schedule('* * /5 * * *', updateAllProducts);
+
 const server = new ApolloServer({
   schema,
   context: ({ req, res }) => {
