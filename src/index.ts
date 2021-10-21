@@ -26,11 +26,11 @@ const app = express();
 
 export const db = Knex(config);
 
-// update all product's current price every one minute
+// update all product's current price every 1 minute
 //cron.schedule('*/1 * * * *', updateAllProducts);
 
-// update all product's current price every five hours
-cron.schedule('* * /5 * * *', updateAllProducts);
+// update all product's current price every 30 minutes
+cron.schedule('*/30 * * * *', updateAllProducts);
 
 const server = new ApolloServer({
   schema,
